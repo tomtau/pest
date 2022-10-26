@@ -7,7 +7,11 @@
 // option. All files in the project carrying such notice may not be copied,
 // modified, or distributed except according to those terms.
 #![no_std]
-
+#![doc(
+    html_logo_url = "https://raw.githubusercontent.com/pest-parser/pest/master/pest-logo.svg",
+    html_favicon_url = "https://raw.githubusercontent.com/pest-parser/pest/master/pest-logo.svg"
+)]
+#![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 //! # pest. The Elegant Parser
 //!
 //! pest is a general purpose parser written in Rust with a focus on accessibility, correctness,
@@ -25,12 +29,15 @@
 //!
 //! * API reference on [docs.rs]
 //! * play with grammars and share them on our [fiddle]
-//! * leave feedback, ask questions, or greet us on [Gitter]
+//! * find previous common questions answered or ask questions on [GitHub Discussions]
+//! * leave feedback, ask questions, or greet us on [Gitter] or [Discord]
 //!
-//! [book]: https://pest-parser.github.io/book
+//! [book]: https://pest.rs/book
 //! [docs.rs]: https://docs.rs/pest
-//! [fiddle]: https://pest-parser.github.io/#editor
-//! [Gitter]: https://gitter.im/dragostis/pest
+//! [fiddle]: https://pest.rs/#editor
+//! [Gitter]: https://gitter.im/pest-parser/pest
+//! [Discord]: https://discord.gg/XEGACtWpT2
+//! [GitHub Discussions]: https://github.com/pest-parser/pest/discussions
 //!
 //! ## Usage
 //!
@@ -67,7 +74,6 @@
 extern crate alloc;
 #[cfg(feature = "std")]
 extern crate std;
-extern crate ucd_trie;
 
 #[cfg(feature = "pretty-print")]
 extern crate serde;

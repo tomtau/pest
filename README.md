@@ -5,8 +5,8 @@
 
 # pest. The Elegant Parser
 
-[![Join the chat at https://gitter.im/dragostis/pest](https://badges.gitter.im/dragostis/pest.svg)](https://gitter.im/dragostis/pest?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Book](https://img.shields.io/badge/book-WIP-4d76ae.svg)](https://pest-parser.github.io/book)
+[![Join the chat at https://gitter.im/pest-parser/pest](https://badges.gitter.im/dragostis/pest.svg)](https://gitter.im/pest-parser/pest?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Book](https://img.shields.io/badge/book-WIP-4d76ae.svg)](https://pest.rs/book)
 [![Docs](https://docs.rs/pest/badge.svg)](https://docs.rs/pest)
 
 [![pest Continuous Integration](https://github.com/pest-parser/pest/actions/workflows/ci.yml/badge.svg)](https://github.com/pest-parser/pest/actions/workflows/ci.yml)
@@ -31,12 +31,15 @@ Other helpful resources:
 
 * API reference on [docs.rs]
 * play with grammars and share them on our [fiddle]
-* leave feedback, ask questions, or greet us on [Gitter]
+* find previous common questions answered or ask questions on [GitHub Discussions]
+* leave feedback, ask questions, or greet us on [Gitter] or [Discord]
 
-[book]: https://pest-parser.github.io/book
+[book]: https://pest.rs/book
 [docs.rs]: https://docs.rs/pest
-[fiddle]: https://pest-parser.github.io/#editor
-[Gitter]: https://gitter.im/dragostis/pest
+[fiddle]: https://pest.rs/#editor
+[Gitter]: https://gitter.im/pest-parser/pest
+[Discord]: https://discord.gg/XEGACtWpT2
+[GitHub Discussions]: https://github.com/pest-parser/pest/discussions
 
 ## Example
 

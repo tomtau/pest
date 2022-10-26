@@ -24,12 +24,16 @@
 //!
 //! * API reference on [docs.rs]
 //! * play with grammars and share them on our [fiddle]
-//! * leave feedback, ask questions, or greet us on [Gitter]
+//! * find previous common questions answered or ask questions on [GitHub Discussions]
+//! * leave feedback, ask questions, or greet us on [Gitter] or [Discord]
 //!
-//! [book]: https://pest-parser.github.io/book
+//! [book]: https://pest.rs/book
 //! [docs.rs]: https://docs.rs/pest
-//! [fiddle]: https://pest-parser.github.io/#editor
-//! [Gitter]: https://gitter.im/dragostis/pest
+//! [fiddle]: https://pest.rs/#editor
+//! [Gitter]: https://gitter.im/pest-parser/pest
+//! [Discord]: https://discord.gg/XEGACtWpT2
+//! [GitHub Discussions]: https://github.com/pest-parser/pest/discussions
+//!
 //!
 //! ## `.pest` files
 //!

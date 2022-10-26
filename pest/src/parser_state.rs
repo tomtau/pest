@@ -28,8 +28,24 @@ use crate::RuleType;
 /// [`ParserState`]: struct.ParserState.html
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Lookahead {
+    /// The positive predicate, written as an ampersand &,
+    /// attempts to match its inner expression.
+    /// If the inner expression succeeds, parsing continues,
+    /// but at the same position as the predicate —
+    /// &foo ~ bar is thus a kind of "AND" statement:
+    /// "the input string must match foo AND bar".
+    /// If the inner expression fails,
+    /// the whole expression fails too.
     Positive,
+    /// The negative predicate, written as an exclamation mark !,
+    /// attempts to match its inner expression.
+    /// If the inner expression fails, the predicate succeeds
+    /// and parsing continues at the same position as the predicate.
+    /// If the inner expression succeeds, the predicate fails —
+    /// !foo ~ bar is thus a kind of "NOT" statement:
+    /// "the input string must match bar but NOT foo".
     Negative,
+    /// No lookahead (i.e. it will consume input).
     None,
 }
 
@@ -38,8 +54,16 @@ pub enum Lookahead {
 /// [`ParserState`]: struct.ParserState.html
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Atomicity {
+    /// prevents implicit whitespace: inside an atomic rule,
+    /// the tilde ~ means "immediately followed by",
+    /// and repetition operators (asterisk * and plus sign +)
+    /// have no implicit separation. In addition, all other rules
+    /// called from an atomic rule are also treated as atomic.
+    /// (interior matching rules are silent)
     Atomic,
+    /// The same as atomic, but inner tokens are produced as normal.
     CompoundAtomic,
+    /// implicit whitespace is enabled
     NonAtomic,
 }
 
@@ -49,7 +73,9 @@ pub type ParseResult<S> = Result<S, S>;
 /// Match direction for the stack. Used in `PEEK[a..b]`/`stack_match_peek_slice`.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum MatchDir {
+    /// from the bottom to the top of the stack
     BottomToTop,
+    /// from the top to the bottom of the stack
     TopToBottom,
 }
 
@@ -1036,7 +1062,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
         let mut position = self.position;
         let result = {
             let mut iter_b2t = self.stack[range].iter();
-            let matcher = |span: &Span| position.match_string(span.as_str());
+            let matcher = |span: &Span<'_>| position.match_string(span.as_str());
             match match_dir {
                 MatchDir::BottomToTop => iter_b2t.all(matcher),
                 MatchDir::TopToBottom => iter_b2t.rev().all(matcher),
