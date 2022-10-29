@@ -6,7 +6,12 @@
 // license <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. All files in the project carrying such notice may not be copied,
 // modified, or distributed except according to those terms.
-
+#![doc(
+    html_root_url = "https://docs.rs/pest_derive",
+    html_logo_url = "https://raw.githubusercontent.com/pest-parser/pest/master/pest-logo.svg",
+    html_favicon_url = "https://raw.githubusercontent.com/pest-parser/pest/master/pest-logo.svg"
+)]
+#![warn(missing_docs, rust_2018_idioms, unused_qualifications)]
 //! # pest. The Elegant Parser
 //!
 //! pest is a general purpose parser written in Rust with a focus on accessibility, correctness,
@@ -293,12 +298,10 @@
 //! * `ASCII` - matches a character from \x00..\x7f
 //! * `NEWLINE` - matches either "\n" or "\r\n" or "\r"
 
-#![doc(html_root_url = "https://docs.rs/pest_derive")]
-extern crate pest_generator;
-extern crate proc_macro;
-
 use proc_macro::TokenStream;
 
+/// The main method that's called by the proc macro
+/// (a wrapper around `pest_generator::derive_parser`)
 #[proc_macro_derive(Parser, attributes(grammar, grammar_inline))]
 pub fn derive_parser(input: TokenStream) -> TokenStream {
     pest_generator::derive_parser(input.into(), true).into()
