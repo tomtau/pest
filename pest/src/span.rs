@@ -200,7 +200,7 @@ impl<'i> Span<'i> {
     /// enum Rule {}
     ///
     /// let input = "abc";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input).skip(1).unwrap();
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input).skip(1).unwrap();
     /// let start_pos = state.position().clone();
     /// state = state.match_string("b").unwrap();
     /// let span = start_pos.span(&state.position().clone());
@@ -223,7 +223,7 @@ impl<'i> Span<'i> {
     /// enum Rule {}
     ///
     /// let input = "a\nb\nc";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input).skip(2).unwrap();
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input).skip(2).unwrap();
     /// let start_pos = state.position().clone();
     /// state = state.match_string("b\nc").unwrap();
     /// let span = start_pos.span(&state.position().clone());
@@ -248,7 +248,7 @@ impl<'i> Span<'i> {
     /// enum Rule {}
     ///
     /// let input = "a\nb\nc";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input).skip(2).unwrap();
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input).skip(2).unwrap();
     /// let start_pos = state.position().clone();
     /// state = state.match_string("b\nc").unwrap();
     /// let span = start_pos.span(&state.position().clone());

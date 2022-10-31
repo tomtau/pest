@@ -221,7 +221,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// }
     ///
     /// let input = "ab";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let position = state.position();
     /// assert_eq!(position.pos(), 0);
     /// ```
@@ -243,7 +243,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// }
     ///
     /// let input = "ab";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let atomicity = state.atomicity();
     /// assert_eq!(atomicity, Atomicity::NonAtomic);
     /// ```
@@ -490,7 +490,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// }
     ///
     /// let input = "aab";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.repeat(|s| {
     ///     s.match_string("a")
     /// });
@@ -534,7 +534,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// }
     ///
     /// let input = "ab";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let result = state.optional(|s| {
     ///     s.match_string("ab")
     /// });
@@ -570,13 +570,13 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "ab";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let result = state.match_char_by(|c| c.is_ascii());
     /// assert!(result.is_ok());
     /// assert_eq!(result.unwrap().position().pos(), 1);
     ///
     /// let input = "❤";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let result = state.match_char_by(|c| c.is_ascii());
     /// assert!(result.is_err());
     /// assert_eq!(result.unwrap_err().position().pos(), 0);
@@ -605,7 +605,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "ab";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.match_string("ab");
     /// assert!(result.is_ok());
     /// assert_eq!(result.unwrap().position().pos(), 2);
@@ -636,7 +636,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "ab";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.match_insensitive("AB");
     /// assert!(result.is_ok());
     /// assert_eq!(result.unwrap().position().pos(), 2);
@@ -667,7 +667,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "ab";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.match_range('a'..'z');
     /// assert!(result.is_ok());
     /// assert_eq!(result.unwrap().position().pos(), 1);
@@ -698,7 +698,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "ab";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.skip(1);
     /// assert!(result.is_ok());
     /// assert_eq!(result.unwrap().position().pos(), 1);
@@ -729,7 +729,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "abcd";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.skip_until(&["c", "d"]);
     /// assert!(result.is_ok());
     /// assert_eq!(result.unwrap().position().pos(), 2);
@@ -752,7 +752,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "ab";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.start_of_input();
     /// assert!(result.is_ok());
     ///
@@ -782,7 +782,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "ab";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.end_of_input();
     /// assert!(result.is_err());
     ///
@@ -936,7 +936,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "ab";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.stack_push(|state| state.match_string("a"));
     /// assert!(result.is_ok());
     /// assert_eq!(result.unwrap().position().pos(), 1);
@@ -973,7 +973,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "aa";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.stack_push(|state| state.match_string("a")).and_then(
     ///     |state| state.stack_peek()
     /// );
@@ -1002,7 +1002,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "aa";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.stack_push(|state| state.match_string("a")).and_then(
     ///     |state| state.stack_pop()
     /// );
@@ -1030,7 +1030,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "abcd cd cb";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state
     ///     .stack_push(|state| state.match_string("a"))
     ///     .and_then(|state| state.stack_push(|state| state.match_string("b")))
@@ -1087,7 +1087,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "abba";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state
     ///     .stack_push(|state| state.match_string("a"))
     ///     .and_then(|state| { state.stack_push(|state| state.match_string("b")) })
@@ -1111,7 +1111,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "aaaa";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.stack_push(|state| state.match_string("a")).and_then(|state| {
     ///     state.stack_push(|state| state.match_string("a"))
     /// }).and_then(|state| state.stack_match_peek());
@@ -1149,7 +1149,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "aa";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.stack_push(|state| state.match_string("a")).and_then(
     ///     |state| state.stack_drop()
     /// );
@@ -1176,7 +1176,7 @@ impl<'i, R: RuleType> ParserState<'i, R> {
     /// enum Rule {}
     ///
     /// let input = "ab";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.restore_on_err(|state| state.stack_push(|state|
     ///     state.match_string("a")).and_then(|state| state.match_string("a"))
     /// );

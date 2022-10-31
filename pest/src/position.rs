@@ -125,7 +125,7 @@ impl<'i> Position<'i> {
     /// enum Rule {}
     ///
     /// let input = "\na";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.match_string("\na");
     /// assert!(result.is_ok());
     /// assert_eq!(result.unwrap().position().line_col(), (2, 2));
@@ -156,7 +156,7 @@ impl<'i> Position<'i> {
     /// enum Rule {}
     ///
     /// let input = "\na";
-    /// let mut state: Box<pest::ParserState<Rule>> = pest::ParserState::new(input);
+    /// let mut state: Box<pest::ParserState<'_, Rule>> = pest::ParserState::new(input);
     /// let mut result = state.match_string("\na");
     /// assert!(result.is_ok());
     /// assert_eq!(result.unwrap().position().line_of(), "a");
