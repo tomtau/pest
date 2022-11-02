@@ -1567,19 +1567,19 @@ mod tests {
         ));
         const ERROR: &str = "call limit reached";
         pest::set_call_limit(Some(5_000usize.try_into().unwrap()));
-        let s1 = crate::parser::parse(crate::parser::Rule::grammar_rules, sample1);
+        let s1 = parse(Rule::grammar_rules, sample1);
         assert!(s1.is_err());
         assert_eq!(s1.unwrap_err().variant.message(), ERROR);
-        let s2 = crate::parser::parse(crate::parser::Rule::grammar_rules, sample2);
+        let s2 = parse(Rule::grammar_rules, sample2);
         assert!(s2.is_err());
         assert_eq!(s2.unwrap_err().variant.message(), ERROR);
-        let s3 = crate::parser::parse(crate::parser::Rule::grammar_rules, sample3);
+        let s3 = parse(Rule::grammar_rules, sample3);
         assert!(s3.is_err());
         assert_eq!(s3.unwrap_err().variant.message(), ERROR);
-        let s4 = crate::parser::parse(crate::parser::Rule::grammar_rules, sample4);
+        let s4 = parse(Rule::grammar_rules, sample4);
         assert!(s4.is_err());
         assert_eq!(s4.unwrap_err().variant.message(), ERROR);
-        let s5 = crate::parser::parse(crate::parser::Rule::grammar_rules, sample5);
+        let s5 = parse(Rule::grammar_rules, sample5);
         assert!(s5.is_err());
         assert_eq!(s5.unwrap_err().variant.message(), ERROR);
     }

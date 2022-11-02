@@ -138,9 +138,9 @@ mod tests {
     #[test]
     fn double_ended_iter_for_tokens() {
         let pairs = AbcParser::parse(Rule::a, "abcde").unwrap();
-        let mut tokens = pairs.clone().tokens().collect::<Vec<Token<Rule>>>();
+        let mut tokens = pairs.clone().tokens().collect::<Vec<Token<'_, Rule>>>();
         tokens.reverse();
-        let reverse_tokens = pairs.tokens().rev().collect::<Vec<Token<Rule>>>();
+        let reverse_tokens = pairs.tokens().rev().collect::<Vec<Token<'_, Rule>>>();
         assert_eq!(tokens, reverse_tokens);
     }
 }
