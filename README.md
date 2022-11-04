@@ -84,6 +84,9 @@ thread 'main' panicked at ' --> 1:1
   = expected ident', src/main.rs:12
 ```
 
+These error messages can be obtained from their default `Display` implementation,
+e.g. `panic!("{}", parser_result.unwrap_err())` or `println!("{}", e)`.
+
 ## Pairs API
 
 The grammar can be used to derive a `Parser` implementation automatically.
@@ -134,6 +137,25 @@ Span:    Span { start: 3, end: 5 }
 Text:    b2
 Letter:  b
 Digit:   2
+```
+
+### Defining multiple parsers in a single file
+The current automatic `Parser` derivation will produce the `Rule` enum
+which would have name conflicts if one tried to define multiple such structs
+that automatically derive `Parser`. One possible way around it is to put each
+parser struct in a separate namespace:
+
+```rust
+mod a {
+    #[derive(Parser)]
+    #[grammar = "a.pest"]
+    pub struct ParserA;
+}
+mod b {
+    #[derive(Parser)]
+    #[grammar = "b.pest"]
+    pub struct ParserB;
+}
 ```
 
 ## Other features

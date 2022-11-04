@@ -190,6 +190,10 @@
 //! `e1` did. Repetitions and optionals (`e*`, `e+`, `e{, n}`, `e{n,}`,
 //! `e{m,n}`, `e?`) can modify the stack each time `e` matches. The `!e` and `&e`
 //! expressions are a special case; they never modify the stack.
+//! Many languages have "keyword" tokens (e.g. if, for, while) as well as general
+//! tokens (e.g. identifier) that matches any word. In order to match a keyword,
+//! generally, you may need to restrict that is not immediately followed by another
+//! letter or digit (otherwise it would be matched as an identifier).
 //!
 //! ## Special rules
 //!
