@@ -14,9 +14,9 @@ readme = "_README.md"
 rust-version = "1.56"
 
 [dependencies]
-pest = { path = "../pest", version = "2.4.1" }
-pest_meta = { path = "../meta", version = "2.4.1" }
-pest_vm = { path = "../vm", version = "2.4.1" }
+pest = { path = "../pest", version = "2.5.0" }
+pest_meta = { path = "../meta", version = "2.5.0" }
+pest_vm = { path = "../vm", version = "2.5.0" }
 rustyline = "10"
 thiserror = "1"
 

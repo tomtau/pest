@@ -9,7 +9,49 @@
 //! # pest debugger
 //!
 //! This crate contains definitions for the debugger.
-
+//! A sample CLI-based debugger is available in `main.rs`.
+//! Other debugger frontends can be implemented using this
+//! crate's `DebuggerContext`:
+//!
+//! ```
+//! use pest_debugger::DebuggerContext;
+//! use std::sync::mpsc::channel;
+//! let mut context = DebuggerContext::default();
+//!
+//! context
+//! .load_grammar_direct(
+//!     "testgrammar",
+//!     r#"alpha = { 'a'..'z' | 'A'..'Z' }
+//! digit = { '0'..'9' }
+//!
+//! ident = { !digit ~ (alpha | digit)+ }
+//!
+//! ident_list = _{ ident ~ (" " ~ ident)* }"#,
+//! ).expect("Error: failed to load grammar");
+//! context.load_input_direct("test test2".to_owned());
+//!
+//! let (sender, receiver) = channel();
+//!
+//! context.add_breakpoint("ident".to_owned());
+//! for b in context.list_breakpoints().iter() {
+//!     println!("Breakpoint: {}", b);
+//! }
+//! context
+//! .run("ident_list", sender)
+//! .expect("Error: failed to run rule");
+//!
+//! let event = receiver.recv().expect("Error: failed to receive event");
+//! println!("Received a debugger event: {:?}", event);
+//!
+//! context.cont().expect("Error: failed to continue");
+//!
+//! let event = receiver.recv().expect("Error: failed to receive event");
+//! println!("Received a debugger event: {:?}", event);
+//! ```
+//! ## Current Limitations
+//! - relies on OS threads instead of stack-full generators
+//! - only shows position from the `ParserState` when it reaches a breakpoint
+//! - no way to run another rule from a breakpoint, only from the start
 #![doc(
     html_logo_url = "https://raw.githubusercontent.com/pest-parser/pest/master/pest-logo.svg",
     html_favicon_url = "https://raw.githubusercontent.com/pest-parser/pest/master/pest-logo.svg"
@@ -32,36 +74,56 @@ use pest::{error::Error, Position};
 use pest_meta::{optimizer::OptimizedRule, parse_and_optimize, parser::Rule};
 use pest_vm::Vm;
 
+/// Possible errors that can occur in the debugger context.
 #[derive(Debug, thiserror::Error)]
 pub enum DebuggerError {
+    /// Errors from opening files etc.
     #[error("I/O error: {0}")]
     Io(#[from] io::Error),
+    /// When a filename can't be extracted from a grammar path.
     #[error("Missing filename")]
     MissingFilename,
+    /// Running a debugger requires a grammar to be provided.
     #[error("Open grammar first")]
     GrammarNotOpened,
+    /// Running a debugger requires a parsing input to be provided.
     #[error("Open input first")]
     InputNotOpened,
+    /// Continuing a debugger session requires starting a session by running a rule.
     #[error("Run rule first")]
     RunRuleFirst,
+    /// Parsing finished (i.e. cannot continue the session).
     #[error("End-of-input reached")]
     EofReached,
+    /// Can't create a `Position` in a given input.
     #[error("Invalid position: {0}")]
     InvalidPosition(usize),
+    /// The provided grammar is invalid.
+    /// The first element contains a formatted error message.
+    /// The second element (`Vec`) contains the errors.
     #[error("Grammar error: {0}")]
     IncorrectGrammar(String, Vec<Error<Rule>>),
+    /// When restarting a session, the previous session
+    /// seem to have panicked.
     #[error("Previous parsing execution panic: {0}")]
     PreviousRunPanic(String),
 }
 
+/// Events that are sent from the debugger.
 #[derive(Debug, PartialEq, Eq)]
-pub enum Event {
+pub enum DebuggerEvent {
+    /// A breakpoint encountered.
+    /// The first element is the rule name.
+    /// The second element is the position.
     Breakpoint(String, usize),
+    /// The end of the input has been reached.
     Eof,
+    /// A parsing error encountered.
     Error(String),
 }
 
-pub struct Context {
+/// Debugger for pest grammars.
+pub struct DebuggerContext {
     handle: Option<JoinHandle<()>>,
     is_done: Arc<AtomicBool>,
     grammar: Option<Vec<OptimizedRule>>,
@@ -72,7 +134,7 @@ pub struct Context {
 const POISONED_LOCK_PANIC: &str = "poisoned lock";
 const CHANNEL_CLOSED_PANIC: &str = "channel closed";
 
-impl Context {
+impl DebuggerContext {
     fn file_to_string(path: &PathBuf) -> Result<String, DebuggerError> {
         let mut file = File::open(path)?;
 
@@ -82,41 +144,48 @@ impl Context {
         Ok(string)
     }
 
+    /// Loads a grammar from a file.
     pub fn load_grammar(&mut self, path: &PathBuf) -> Result<(), DebuggerError> {
-        let grammar = Context::file_to_string(path)?;
+        let grammar = DebuggerContext::file_to_string(path)?;
 
         let file_name = path
             .file_name()
             .map(|string| string.to_string_lossy().into_owned())
             .ok_or(DebuggerError::MissingFilename)?;
 
-        self.grammar = Some(Context::parse_grammar(&file_name, &grammar)?);
+        self.grammar = Some(DebuggerContext::parse_grammar(&file_name, &grammar)?);
 
         Ok(())
     }
 
+    /// Loads a grammar from a string.
     pub fn load_grammar_direct(
         &mut self,
-        file_name: &str,
+        grammar_name: &str,
         grammar: &str,
     ) -> Result<(), DebuggerError> {
-        self.grammar = Some(Context::parse_grammar(file_name, grammar)?);
+        self.grammar = Some(DebuggerContext::parse_grammar(grammar_name, grammar)?);
 
         Ok(())
     }
 
+    /// Loads a parsing input from a file.
     pub fn load_input(&mut self, path: &PathBuf) -> Result<(), DebuggerError> {
-        let input = Context::file_to_string(path)?;
+        let input = DebuggerContext::file_to_string(path)?;
 
         self.input = Some(input);
 
         Ok(())
     }
 
+    /// Loads a parsing input from a string.
     pub fn load_input_direct(&mut self, input: String) {
         self.input = Some(input);
     }
 
+    /// Adds all grammar rules as breakpoints.
+    /// This is useful for stepping through the entire parsing process.
+    /// It returns an error if the grammar hasn't been loaded yet.
     pub fn add_all_rules_breakpoints(&mut self) -> Result<(), DebuggerError> {
         let ast = self
             .grammar
@@ -130,24 +199,28 @@ impl Context {
         Ok(())
     }
 
+    /// Adds a rule to breakpoints.
     pub fn add_breakpoint(&mut self, rule: String) {
         let mut breakpoints = self.breakpoints.lock().expect(POISONED_LOCK_PANIC);
 
         breakpoints.insert(rule);
     }
 
+    /// Removes a rule from breakpoints.
     pub fn delete_breakpoint(&mut self, rule: &str) {
         let mut breakpoints = self.breakpoints.lock().expect(POISONED_LOCK_PANIC);
 
         breakpoints.remove(rule);
     }
 
+    /// Removes all breakpoints.
     pub fn delete_all_breakpoints(&mut self) {
         let mut breakpoints = self.breakpoints.lock().expect(POISONED_LOCK_PANIC);
 
         breakpoints.clear();
     }
 
+    /// Returns a list of all breakpoints.
     pub fn list_breakpoints(&self) -> Vec<String> {
         let breakpoints = self.breakpoints.lock().expect(POISONED_LOCK_PANIC);
         let mut breakpoints: Vec<_> = breakpoints.iter().map(ToOwned::to_owned).collect();
@@ -160,7 +233,7 @@ impl Context {
         ast: Vec<OptimizedRule>,
         rule: String,
         input: String,
-        sender: Sender<Event>,
+        sender: Sender<DebuggerEvent>,
     ) -> JoinHandle<()> {
         let breakpoints = Arc::clone(&self.breakpoints);
         let is_done = Arc::clone(&self.is_done);
@@ -178,7 +251,7 @@ impl Context {
 
                     if lock.contains(&rule) {
                         rsender
-                            .send(Event::Breakpoint(rule, pos.pos()))
+                            .send(DebuggerEvent::Breakpoint(rule, pos.pos()))
                             .expect(CHANNEL_CLOSED_PANIC);
 
                         thread::park();
@@ -188,9 +261,9 @@ impl Context {
             );
 
             match vm.parse(&rule, &input) {
-                Ok(_) => sender.send(Event::Eof).expect(CHANNEL_CLOSED_PANIC),
+                Ok(_) => sender.send(DebuggerEvent::Eof).expect(CHANNEL_CLOSED_PANIC),
                 Err(error) => sender
-                    .send(Event::Error(error.to_string()))
+                    .send(DebuggerEvent::Error(error.to_string()))
                     .expect(CHANNEL_CLOSED_PANIC),
             };
 
@@ -245,7 +318,11 @@ impl Context {
         }
     }
 
-    pub fn run(&mut self, rule: &str, sender: Sender<Event>) -> Result<(), DebuggerError> {
+    /// Starts a debugger session: runs a rule on an input and stops at breakpoints.
+    /// When the debugger is stopped, an event is sent to the channel using `sender`.
+    /// The debugger can be resumed by calling `cont`.
+    /// This naturally returns errors if the grammar or input haven't been loaded yet etc.
+    pub fn run(&mut self, rule: &str, sender: Sender<DebuggerEvent>) -> Result<(), DebuggerError> {
         if let Some(handle) = self.handle.take() {
             if !(self.is_done.load(Ordering::Relaxed)) {
                 self.is_done.store(true, Ordering::SeqCst);
@@ -273,6 +350,8 @@ impl Context {
         }
     }
 
+    /// Continue the debugger session from the breakpoint.
+    /// It returns an error if the session finished or wasn't started yet.
     pub fn cont(&self) -> Result<(), DebuggerError> {
         if self.is_done.load(Ordering::SeqCst) {
             return Err(DebuggerError::EofReached);
@@ -287,6 +366,7 @@ impl Context {
         }
     }
 
+    /// Returns a `Position` from the loaded input.
     pub fn get_position(&self, pos: usize) -> Result<Position<'_>, DebuggerError> {
         match self.input {
             Some(ref input) => Position::new(input, pos).ok_or(DebuggerError::InvalidPosition(pos)),
@@ -295,7 +375,7 @@ impl Context {
     }
 }
 
-impl Default for Context {
+impl Default for DebuggerContext {
     fn default() -> Self {
         Self {
             handle: None,
@@ -314,7 +394,7 @@ mod test {
 
     #[test]
     fn test_full_flow() {
-        let mut context = Context::default();
+        let mut context = DebuggerContext::default();
 
         context
             .load_grammar_direct(
@@ -339,16 +419,16 @@ mod test {
             .expect("Error: failed to run rule");
 
         let event = receiver.recv().expect("Error: failed to receive event");
-        assert_eq!(event, Event::Breakpoint("ident".to_owned(), 0));
+        assert_eq!(event, DebuggerEvent::Breakpoint("ident".to_owned(), 0));
 
         context.cont().expect("Error: failed to continue");
 
         let event = receiver.recv().expect("Error: failed to receive event");
-        assert_eq!(event, Event::Breakpoint("ident".to_owned(), 5));
+        assert_eq!(event, DebuggerEvent::Breakpoint("ident".to_owned(), 5));
         context.cont().expect("Error: failed to continue");
         let event = receiver.recv().expect("Error: failed to receive event");
 
-        assert_eq!(event, Event::Eof);
+        assert_eq!(event, DebuggerEvent::Eof);
         context
             .add_all_rules_breakpoints()
             .expect("grammar is loaded");
@@ -361,7 +441,7 @@ mod test {
 
     #[test]
     pub fn test_errors() {
-        let mut context = Context::default();
+        let mut context = DebuggerContext::default();
 
         assert!(context.load_input(&PathBuf::from(".")).is_err());
         let pest_readme = PathBuf::from(concat!(env!("CARGO_MANIFEST_DIR"), "/../README.md"));

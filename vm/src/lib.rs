@@ -27,6 +27,10 @@ use std::collections::HashMap;
 
 mod macros;
 
+/// A callback function that is called when a rule is matched.
+/// The first argument is the name of the rule and the second is the span of the rule.
+/// The function should return `true` if parsing should be terminated
+/// (if the new parsing session was started) or `false` otherwise.
 type ListenerFn = Box<dyn Fn(String, &Position<'_>) -> bool>;
 
 /// A virtual machine-like construct that runs an AST on-the-fly
@@ -39,12 +43,21 @@ impl Vm {
     /// Creates a new `Vm` from optimized rules
     pub fn new(rules: Vec<OptimizedRule>) -> Vm {
         let rules = rules.into_iter().map(|r| (r.name.clone(), r)).collect();
-        Vm { rules, listener: None }
+        Vm {
+            rules,
+            listener: None,
+        }
     }
 
+    /// Creates a new `Vm` from optimized rules
+    /// and a listener function that is called when a rule is matched.
+    /// (used by the `pest_debugger` crate)
     pub fn new_with_listener(rules: Vec<OptimizedRule>, listener: ListenerFn) -> Vm {
         let rules = rules.into_iter().map(|r| (r.name.clone(), r)).collect();
-        Vm { rules, listener: Some(listener) }
+        Vm {
+            rules,
+            listener: Some(listener),
+        }
     }
 
     /// Runs a parser rule on an input

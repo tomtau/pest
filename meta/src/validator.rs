@@ -75,7 +75,7 @@ static BUILTINS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
 /// - using Pest keywords
 /// - duplicate rules
 /// - undefined rules
-/// 
+///
 /// It returns a `Result` with a `Vec` of `Error`s if any of the above is found.
 /// If no errors are found, it returns the vector of names of used builtin rules.
 pub fn validate_pairs(pairs: Pairs<'_, Rule>) -> Result<Vec<&str>, Vec<Error<Rule>>> {

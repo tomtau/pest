@@ -21,7 +21,7 @@ use std::time::Duration;
 
 use pest::error::{Error, ErrorVariant};
 
-use pest_debugger::{Context, DebuggerError, Event};
+use pest_debugger::{DebuggerContext, DebuggerError, DebuggerEvent};
 use rustyline::completion::{Completer, FilenameCompleter, Pair};
 use rustyline::error::ReadlineError;
 use rustyline::highlight::Highlighter;
@@ -33,8 +33,8 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Default)]
 struct Cli {
-    context: Context,
-    receiver: Option<Receiver<Event>>,
+    context: DebuggerContext,
+    receiver: Option<Receiver<DebuggerEvent>>,
 }
 
 impl Cli {
@@ -55,7 +55,7 @@ impl Cli {
         let rec = &receiver;
         self.context.run(rule, sender)?;
         match rec.recv_timeout(Duration::from_secs(5)) {
-            Ok(Event::Breakpoint(rule, pos)) => {
+            Ok(DebuggerEvent::Breakpoint(rule, pos)) => {
                 let error: Error<()> = Error::new_from_pos(
                     ErrorVariant::CustomError {
                         message: format!("parsing {}", rule),
@@ -64,8 +64,8 @@ impl Cli {
                 );
                 println!("{}", error);
             }
-            Ok(Event::Eof) => println!("end-of-input reached"),
-            Ok(Event::Error(error)) => println!("{}", error),
+            Ok(DebuggerEvent::Eof) => println!("end-of-input reached"),
+            Ok(DebuggerEvent::Error(error)) => println!("{}", error),
             Err(_) => eprintln!("parsing timed out"),
         }
         self.receiver = Some(receiver);
@@ -77,7 +77,7 @@ impl Cli {
 
         match self.receiver {
             Some(ref rec) => match rec.recv_timeout(Duration::from_secs(5)) {
-                Ok(Event::Breakpoint(rule, pos)) => {
+                Ok(DebuggerEvent::Breakpoint(rule, pos)) => {
                     let error: Error<()> = Error::new_from_pos(
                         ErrorVariant::CustomError {
                             message: format!("parsing {}", rule),
@@ -86,8 +86,8 @@ impl Cli {
                     );
                     println!("{}", error);
                 }
-                Ok(Event::Eof) => println!("end-of-input reached"),
-                Ok(Event::Error(error)) => println!("{}", error),
+                Ok(DebuggerEvent::Eof) => println!("end-of-input reached"),
+                Ok(DebuggerEvent::Error(error)) => println!("{}", error),
                 Err(_) => eprintln!("parsing timed out"),
             },
             None => println!("Error: run rule first"),
