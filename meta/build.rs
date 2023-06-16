@@ -83,7 +83,7 @@ fn main() {
                 let mut opts =
                     CompileOptions::new(&config, CompileMode::Build).expect("compile options");
                 opts.spec = Packages::Packages(vec!["pest_bootstrap".to_owned()]);
-                opts.features = opts.features = vec!["not-bootstrap-in-src".to_owned()];
+                opts.features = vec!["not-bootstrap-in-src".to_owned()];
 
                 let path = format!(
                     "{}/__pest_grammar.rs",
