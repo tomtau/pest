@@ -125,7 +125,7 @@ jobs:
           kind: check
           toolchain: 1.62.0
       - name: Check feature powerset
-        run: cargo hack check --feature-powerset --optional-deps --exclude-all-features --skip not-bootstrap-in-src,cargo --keep-going --lib --tests --ignore-private
+        run: cargo hack check --feature-powerset --optional-deps --exclude-all-features --skip git-bootstrap,cargo --keep-going --lib --tests --ignore-private
 
   no_std:
     name: check for no_std compatibility

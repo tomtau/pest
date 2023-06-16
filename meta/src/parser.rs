@@ -23,10 +23,10 @@ use crate::validator;
 /// TODO: fix the generator to at least add explicit lifetimes
 #[allow(missing_docs, unused_qualifications)]
 mod grammar {
-    #[cfg(not(feature = "not-bootstrap-in-src"))]
+    #[cfg(not(feature = "git-bootstrap"))]
     include!("grammar.rs");
 
-    #[cfg(feature = "not-bootstrap-in-src")]
+    #[cfg(feature = "git-bootstrap")]
     include!(concat!(env!("OUT_DIR"), "/__pest_grammar.rs"));
 }
 

@@ -16,7 +16,7 @@ rust-version = "1.56"
 [features]
 default = ["std"]
 std = ["pest/std"]
-not-bootstrap-in-src = ["pest_meta/not-bootstrap-in-src"]
+git-bootstrap = ["pest_meta/git-bootstrap"]
 
 [dependencies]
 pest = { path = "../pest", version = "2.6.1", default-features = false }

@@ -25,4 +25,4 @@ cargo = { version = "0.62", optional = true }
 
 [features]
 default = []
-not-bootstrap-in-src = ["cargo"]
+git-bootstrap = ["cargo"]

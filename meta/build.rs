@@ -1,4 +1,4 @@
-#[cfg(feature = "not-bootstrap-in-src")]
+#[cfg(feature = "git-bootstrap")]
 use cargo::{
     core::{resolver::CliFeatures, Workspace},
     ops,
@@ -8,12 +8,12 @@ use cargo::{
 };
 use sha2::{Digest, Sha256};
 use std::env;
-#[cfg(feature = "not-bootstrap-in-src")]
+#[cfg(feature = "git-bootstrap")]
 use std::ffi::OsString;
 use std::fs::{self, File};
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
-#[cfg(not(feature = "not-bootstrap-in-src"))]
+#[cfg(not(feature = "git-bootstrap"))]
 use std::process::Command;
 
 fn display_digest(digest: &[u8]) -> String {
@@ -54,7 +54,7 @@ fn main() {
             let mut hash_file = File::create(hash_path).unwrap();
             writeln!(hash_file, "{}", current_hash).unwrap();
 
-            #[cfg(not(feature = "not-bootstrap-in-src"))]
+            #[cfg(not(feature = "git-bootstrap"))]
             {
                 // This "dynamic linking" is probably so fragile I don't even want to hear it
                 let status = Command::new(manifest_dir.join("../target/debug/pest_bootstrap"))
@@ -71,7 +71,7 @@ fn main() {
                 assert!(status.success(), "Bootstrap failed");
             }
 
-            #[cfg(feature = "not-bootstrap-in-src")]
+            #[cfg(feature = "git-bootstrap")]
             {
                 let config = Config::default().expect("cargo config");
                 let workspace_manifest = manifest_dir
@@ -84,7 +84,7 @@ fn main() {
                     CompileOptions::new(&config, CompileMode::Build).expect("compile options");
                 opts.spec = Packages::Packages(vec!["pest_bootstrap".to_owned()]);
                 opts.cli_features = CliFeatures::from_command_line(
-                    &["not-bootstrap-in-src".to_owned()],
+                    &["git-bootstrap".to_owned()],
                     false,
                     true,
                 )

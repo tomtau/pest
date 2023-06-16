@@ -19,4 +19,4 @@ quote = "1.0"
 default = []
 # Whether or not the bootstrapper should put the generated .rs file in the
 # source tree or in the output tree
-not-bootstrap-in-src = []
+git-bootstrap = []
