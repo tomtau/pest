@@ -83,12 +83,9 @@ fn main() {
                 let mut opts =
                     CompileOptions::new(&config, CompileMode::Build).expect("compile options");
                 opts.spec = Packages::Packages(vec!["pest_bootstrap".to_owned()]);
-                opts.cli_features = CliFeatures::from_command_line(
-                    &["git-bootstrap".to_owned()],
-                    false,
-                    true,
-                )
-                .expect("cli features");
+                opts.cli_features =
+                    CliFeatures::from_command_line(&["git-bootstrap".to_owned()], false, true)
+                        .expect("cli features");
 
                 let path = format!(
                     "{}/__pest_grammar.rs",
