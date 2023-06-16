@@ -15,7 +15,7 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
       - name: Install toolchain
-        uses: dtolnay/rust-toolchain@1.62.0
+        uses: dtolnay/rust-toolchain@1.64.0
       - name: Bootstraping Grammars - Building
         run: cargo build --package pest_bootstrap
       - name: Bootstraping Grammars - Executing
