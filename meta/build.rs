@@ -1,6 +1,6 @@
 #[cfg(feature = "not-bootstrap-in-src")]
 use cargo::{
-    core::{resolver::CliFeatures, Workspace},
+    core::Workspace,
     ops,
     ops::{CompileOptions, Packages},
     util::command_prelude::CompileMode,
@@ -83,12 +83,7 @@ fn main() {
                 let mut opts =
                     CompileOptions::new(&config, CompileMode::Build).expect("compile options");
                 opts.spec = Packages::Packages(vec!["pest_bootstrap".to_owned()]);
-                opts.cli_features = CliFeatures::from_command_line(
-                    &["not-bootstrap-in-src".to_owned()],
-                    false,
-                    true,
-                )
-                .expect("cli features");
+                opts.features = opts.features = vec!["not-bootstrap-in-src".to_owned()];
 
                 let path = format!(
                     "{}/__pest_grammar.rs",
