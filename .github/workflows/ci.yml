@@ -24,6 +24,7 @@ jobs:
         with:
           kind: check
           toolchain: 1.65.0
+          components: llvm-tools-preview
       - name: cargo check
         run: cargo check --all --all-features --all-targets
 
@@ -39,7 +40,7 @@ jobs:
         id: setup
         with:
           kind: check
-          components: clippy, rustfmt
+          components: clippy, rustfmt, llvm-tools-preview
           toolchain: 1.65.0
       - name: cargo fmt
         run: cargo fmt --all -- --check
@@ -63,6 +64,7 @@ jobs:
         with:
           kind: check
           toolchain: 1.65.0
+          components: llvm-tools-preview
       - name: cargo doc
         run: cargo doc --all --all-features
 
