@@ -90,16 +90,12 @@ fn main() {
                 )
                 .expect("cli features");
 
-                let path = if should_bootstrap_in_src() {
-                    OsString::from(grammar_rs_path)
-                } else {
-                    format!(
-                        "{}/__pest_grammar.rs",
-                        env::var("OUT_DIR").expect("OUT_DIR env var")
-                    )
-                    .parse::<OsString>()
-                    .expect("grammar path")
-                };
+                let path = format!(
+                    "{}/__pest_grammar.rs",
+                    env::var("OUT_DIR").expect("OUT_DIR env var")
+                )
+                .parse::<OsString>()
+                .expect("grammar path");
                 if let Err(e) = ops::run(&workspace, &opts, &[path]) {
                     panic!(
                         "Bootstrap failed: {e}. \

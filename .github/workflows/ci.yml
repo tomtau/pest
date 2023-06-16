@@ -26,7 +26,7 @@ jobs:
           toolchain: 1.65.0
           components: llvm-tools-preview
       - name: cargo check
-        run: cargo check --all --all-features --all-targets
+        run: cargo check --all --features pretty-print,const_prec_climber --all-targets
 
   testing:
     name: Unit, Style, and Lint Testing
@@ -45,9 +45,9 @@ jobs:
       - name: cargo fmt
         run: cargo fmt --all -- --check
       - name: cargo clippy
-        run: cargo clippy --all --all-features --all-targets -- -Dwarnings
+        run: cargo clippy --all --features pretty-print,const_prec_climber --all-targets -- -Dwarnings
       - name: cargo test
-        run: cargo test --all --all-features --release
+        run: cargo test --all --features pretty-print,const_prec_climber --release
       - name: cargo test (ignored)
         run: cargo test -p pest_grammars --lib --verbose --release -- --ignored tests::toml_handles_deep_nesting_unstable
 
@@ -66,7 +66,7 @@ jobs:
           toolchain: 1.65.0
           components: llvm-tools-preview
       - name: cargo doc
-        run: cargo doc --all --all-features
+        run: cargo doc --all --features pretty-print,const_prec_climber
 
   dependency:
     name: Minimal Versions Testing
@@ -103,7 +103,7 @@ jobs:
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@cargo-llvm-cov
       - name: Generate code coverage
-        run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+        run: cargo llvm-cov --features pretty-print,const_prec_climber --workspace --lcov --output-path lcov.info
       - name: Upload Results to Codecov
         uses: codecov/codecov-action@v3
         with:
