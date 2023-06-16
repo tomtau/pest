@@ -21,8 +21,8 @@ once_cell = "1.8.0"
 
 [build-dependencies]
 sha2 = { version = "0.10", default-features = false }
-cargo = { version = "0.71", feature = ["vendored-openssl"] }
+cargo = { version = "0.71", optional = true }
 
 [features]
-default = ["bootstrap-in-src"]
-bootstrap-in-src = []
+default = []
+not-bootstrap-in-src = ["cargo"]

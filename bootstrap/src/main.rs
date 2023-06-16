@@ -41,12 +41,12 @@ fn main() {
     writeln!(file, "pub struct PestParser;\n{}", derived,).unwrap();
 }
 
-#[cfg(feature = "bootstrap-in-src")]
+#[cfg(not(feature = "not-bootstrap-in-src"))]
 fn should_bootstrap_in_src() -> bool {
     true
 }
 
-#[cfg(not(feature = "bootstrap-in-src"))]
+#[cfg(feature = "not-bootstrap-in-src")]
 fn should_bootstrap_in_src() -> bool {
     false
 }

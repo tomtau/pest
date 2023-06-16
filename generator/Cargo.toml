@@ -14,9 +14,9 @@ readme = "_README.md"
 rust-version = "1.56"
 
 [features]
-default = ["std", "bootstrap-in-src"]
+default = ["std"]
 std = ["pest/std"]
-bootstrap-in-src = ["pest_meta/bootstrap-in-src"]
+not-bootstrap-in-src = ["pest_meta/not-bootstrap-in-src"]
 
 [dependencies]
 pest = { path = "../pest", version = "2.6.1", default-features = false }

@@ -18,9 +18,9 @@ name = "pest_derive"
 proc-macro = true
 
 [features]
-default = ["std", "bootstrap-in-src"]
+default = ["std"]
 std = ["pest/std", "pest_generator/std"]
-bootstrap-in-src = ["pest_generator/bootstrap-in-src"]
+not-bootstrap-in-src = ["pest_generator/not-bootstrap-in-src"]
 
 [dependencies]
 # for tests, included transitively anyway
