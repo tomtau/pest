@@ -9,12 +9,13 @@ use std::{
     io::prelude::*,
     path::{Path, PathBuf},
 };
+use normpath::PathExt;
 
 fn main() {
     let pest = Path::new(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/../meta/src/grammar.pest"
-    ));
+    )).normalize().expect("normalize path").into_path_buf();
     // Path on which we should write generated grammar file.
     // In case `not-bootstrap-in-src` is:
     // * OFF -> in `grammar.rs` next to `grammar.pest`
