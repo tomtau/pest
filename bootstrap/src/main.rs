@@ -29,7 +29,7 @@ fn main() {
     } else {
         // the path is passed via command-line arguments
         let path = env::args().nth(1).expect("path to grammar.rs");
-        PathBuf::from(path)
+        PathBuf::from(path).normalize().expect("normalize path").into_path_buf()
     };
 
     let derived = {
